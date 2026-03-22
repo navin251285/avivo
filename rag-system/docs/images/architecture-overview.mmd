@@ -1,0 +1,62 @@
+flowchart TD
+  U[User\nTelegram UI]
+
+  subgraph TBOT[telegram-bot (Python bot)]
+    TB1[Entry point for user]
+    TB2[Receives user message]
+    TB3[Calls rag-api]
+    TB4[Sends response back to user]
+  end
+
+  subgraph RAG[rag-api service (Port 8000)]
+    R1[Central orchestrator]
+    R2[Handles greeting and prompt logic]
+    R3[Receives query from telegram-bot]
+    R4[Calls vector-db-service to retrieve relevant chunks]
+    R5[Calls llm-service with question + retrieved chunks]
+    R6[Returns final answer to telegram-bot]
+  end
+
+  subgraph VDB[vector-db-service (Port 8002)]
+    V1[Chunking PDF]
+    V2[Generating embeddings]
+    V3[Used only for retrieval by rag-api]
+  end
+
+  subgraph LLM[llm-service (Port 8001)]
+    L1[Hosts model: Phi-3-mini-4k-instruct-q4.gguf]
+    L2[Loads model once\nno repeated download]
+    L3[Provides inference API]
+    L4[Only called by rag-api]
+  end
+
+  U -->|ask question| TB1
+  TB1 --> TB2
+  TB2 -->|send query| TB3
+  TB3 --> R3
+  R3 --> R1
+  R1 --> R2
+  R2 -->|retrieve relevant chunks| R4
+  R4 --> V3
+  V3 --> V1
+  V1 --> V2
+  V2 -->|return chunks| R5
+  R5 -->|question + chunks| L3
+  L3 --> L1
+  L1 --> L2
+  L2 --> L4
+  L4 -->|generated answer| R6
+  R6 -->|final answer| TB4
+  TB4 -->|response| U
+
+  classDef user fill:#e5e7eb,stroke:#6b7280,color:#111827;
+  classDef tbot fill:#ede9fe,stroke:#7c3aed,color:#111827;
+  classDef rag fill:#ffedd5,stroke:#ea580c,color:#111827;
+  classDef vdb fill:#dbeafe,stroke:#2563eb,color:#111827;
+  classDef llm fill:#dcfce7,stroke:#16a34a,color:#111827;
+
+  class U user;
+  class TB1,TB2,TB3,TB4 tbot;
+  class R1,R2,R3,R4,R5,R6 rag;
+  class V1,V2,V3 vdb;
+  class L1,L2,L3,L4 llm;

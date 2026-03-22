@@ -8,36 +8,73 @@ This document defines the technical architecture of the Avivo HR RAG system and 
 - APIs: FastAPI microservices
 - Chat interface: Telegram bot (NavRag)
 
-![Avivo RAG Architecture Overview](docs/images/architecture-overview.svg)
+Mermaid source: [architecture-overview.mmd](docs/images/architecture-overview.mmd)
 
 ## 1) High-Level Architecture
 
 ```mermaid
-flowchart LR
-    U[Telegram User]
-    T[telegram-bot]
-    R[rag-api]
+flowchart TD
+  U[User\nTelegram UI]
 
-    subgraph VDBS[vector-db service (port 8002)]
-      V[/query API]
-      C[(ChromaDB collection)]
-      V -. internal storage engine .- C
-    end
+  subgraph TBOT[telegram-bot (Python bot)]
+    TB1[Entry point for user]
+    TB2[Receives user message]
+    TB3[Calls rag-api]
+    TB4[Sends response back to user]
+  end
 
-    subgraph LLMS[llm-service (port 8001)]
-      L[/ask API]
-      M[(Phi-3 GGUF model)]
-      L -. model runtime .- M
-    end
+  subgraph RAG[rag-api service (Port 8000)]
+    R1[Central orchestrator]
+    R2[Handles greeting and prompt logic]
+    R3[Receives query from telegram-bot]
+    R4[Calls vector-db-service to retrieve relevant chunks]
+    R5[Calls llm-service with question + retrieved chunks]
+    R6[Returns final answer to telegram-bot]
+  end
 
-    U -->|1) Telegram message| T
-    T -->|2) POST /ask to rag-api| R
-    R -->|3) fetch_matches() -> /query| V
-    V -->|4) top-k matches| R
-    R -->|5) ask_llm() -> /ask| L
-    L -->|6) answer text| R
-    R -->|7) answer payload| T
-    T -->|8) Telegram reply| U
+  subgraph VDB[vector-db-service (Port 8002)]
+    V1[Chunking PDF]
+    V2[Generating embeddings]
+    V3[Used only for retrieval by rag-api]
+  end
+
+  subgraph LLM[llm-service (Port 8001)]
+    L1[Hosts model: Phi-3-mini-4k-instruct-q4.gguf]
+    L2[Loads model once\nno repeated download]
+    L3[Provides inference API]
+    L4[Only called by rag-api]
+  end
+
+  U -->|ask question| TB1
+  TB1 --> TB2
+  TB2 -->|send query| TB3
+  TB3 --> R3
+  R3 --> R1
+  R1 --> R2
+  R2 -->|retrieve relevant chunks| R4
+  R4 --> V3
+  V3 --> V1
+  V1 --> V2
+  V2 -->|return chunks| R5
+  R5 -->|question + chunks| L3
+  L3 --> L1
+  L1 --> L2
+  L2 --> L4
+  L4 -->|generated answer| R6
+  R6 -->|final answer| TB4
+  TB4 -->|response| U
+
+  classDef user fill:#e5e7eb,stroke:#6b7280,color:#111827;
+  classDef tbot fill:#ede9fe,stroke:#7c3aed,color:#111827;
+  classDef rag fill:#ffedd5,stroke:#ea580c,color:#111827;
+  classDef vdb fill:#dbeafe,stroke:#2563eb,color:#111827;
+  classDef llm fill:#dcfce7,stroke:#16a34a,color:#111827;
+
+  class U user;
+  class TB1,TB2,TB3,TB4 tbot;
+  class R1,R2,R3,R4,R5,R6 rag;
+  class V1,V2,V3 vdb;
+  class L1,L2,L3,L4 llm;
 ```
 
 Current behavior in `rag-api` is sequential (not parallel): it first calls `vector-db`, then calls `llm-service` after context is retrieved.
