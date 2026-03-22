@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="520" viewBox="0 0 1320 520" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="520" viewBox="0 0 1560 520" role="img" aria-labelledby="title desc">
   <title id="title">Avivo RAG System Current Working Flow</title>
-  <desc id="desc">Numbered sequential flow: Telegram user to telegram-bot to rag-api to vector-db and back, then llm-service and back, then response to user.</desc>
+  <desc id="desc">Strict sequential chain: user to telegram-bot to rag-api to vector-db back to rag-api to llm-service back to rag-api to telegram-bot to user.</desc>
 
   <defs>
     <style>
@@ -18,6 +18,7 @@
       .model { fill: #faf5ff; stroke: #8b5cf6; }
       .line { stroke: #334155; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
       .lineResp { stroke: #0f766e; stroke-width: 2.6; fill: none; marker-end: url(#arrowResp); }
+      .hint { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
     </style>
 
     <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
@@ -28,80 +29,80 @@
     </marker>
   </defs>
 
-  <text x="34" y="40" class="title">Avivo HR RAG — Current Working Flow (Sequential)</text>
+  <text x="34" y="40" class="title">Avivo HR RAG — Current Working Flow (Strict Sequential Chain)</text>
 
-  <!-- Top row -->
-  <rect x="40" y="170" width="170" height="90" class="node user"/>
-  <text x="125" y="203" text-anchor="middle" class="label">Telegram User</text>
-  <text x="125" y="225" text-anchor="middle" class="small">asks HR question</text>
+  <!-- Main chain nodes -->
+  <rect x="20" y="190" width="150" height="90" class="node user"/>
+  <text x="95" y="224" text-anchor="middle" class="label">Telegram User</text>
+  <text x="95" y="244" text-anchor="middle" class="small">asks question</text>
 
-  <rect x="270" y="170" width="190" height="90" class="node bot"/>
-  <text x="365" y="201" text-anchor="middle" class="label">telegram-bot</text>
-  <text x="365" y="223" text-anchor="middle" class="small">receives + sends chat</text>
-  <text x="365" y="241" text-anchor="middle" class="small">(NavRag)</text>
+  <rect x="210" y="190" width="170" height="90" class="node bot"/>
+  <text x="295" y="222" text-anchor="middle" class="label">telegram-bot</text>
+  <text x="295" y="244" text-anchor="middle" class="small">chat adapter</text>
 
-  <rect x="520" y="170" width="210" height="90" class="node api"/>
-  <text x="625" y="201" text-anchor="middle" class="label">rag-api</text>
-  <text x="625" y="223" text-anchor="middle" class="small">orchestrates RAG</text>
-  <text x="625" y="241" text-anchor="middle" class="small">/ask, /ask-rag</text>
+  <rect x="420" y="190" width="170" height="90" class="node api"/>
+  <text x="505" y="222" text-anchor="middle" class="label">rag-api</text>
+  <text x="505" y="244" text-anchor="middle" class="small">entrypoint</text>
 
-  <!-- Bottom row -->
-  <rect x="800" y="70" width="210" height="90" class="node vector"/>
-  <text x="905" y="101" text-anchor="middle" class="label">vector-db</text>
-  <text x="905" y="123" text-anchor="middle" class="small">retrieve top-k chunks</text>
-  <text x="905" y="141" text-anchor="middle" class="small">Port 8002</text>
+  <rect x="630" y="70" width="180" height="90" class="node vector"/>
+  <text x="720" y="102" text-anchor="middle" class="label">vector-db</text>
+  <text x="720" y="124" text-anchor="middle" class="small">retrieve context</text>
 
-  <rect x="1070" y="70" width="200" height="90" class="node db"/>
-  <text x="1170" y="101" text-anchor="middle" class="label">ChromaDB</text>
-  <text x="1170" y="123" text-anchor="middle" class="small">persistent vectors</text>
-  <text x="1170" y="141" text-anchor="middle" class="small">chunk index</text>
+  <rect x="850" y="190" width="170" height="90" class="node api"/>
+  <text x="935" y="222" text-anchor="middle" class="label">rag-api</text>
+  <text x="935" y="244" text-anchor="middle" class="small">build prompt</text>
 
-  <rect x="800" y="300" width="210" height="90" class="node llm"/>
-  <text x="905" y="331" text-anchor="middle" class="label">llm-service</text>
-  <text x="905" y="353" text-anchor="middle" class="small">generate final answer</text>
-  <text x="905" y="371" text-anchor="middle" class="small">Port 8001</text>
+  <rect x="1060" y="310" width="190" height="90" class="node llm"/>
+  <text x="1155" y="342" text-anchor="middle" class="label">llm-service</text>
+  <text x="1155" y="364" text-anchor="middle" class="small">generate answer</text>
 
-  <rect x="1070" y="300" width="200" height="90" class="node model"/>
-  <text x="1170" y="331" text-anchor="middle" class="label">Phi-3 GGUF</text>
-  <text x="1170" y="353" text-anchor="middle" class="small">local model runtime</text>
-  <text x="1170" y="371" text-anchor="middle" class="small">inference weights</text>
+  <rect x="1290" y="190" width="170" height="90" class="node api"/>
+  <text x="1375" y="222" text-anchor="middle" class="label">rag-api</text>
+  <text x="1375" y="244" text-anchor="middle" class="small">final payload</text>
 
-  <!-- Request path -->
-  <path d="M 210 215 L 270 215" class="line"/>
-  <text x="232" y="206" class="step">1</text>
+  <!-- Side dependency nodes -->
+  <rect x="840" y="70" width="180" height="90" class="node db"/>
+  <text x="930" y="102" text-anchor="middle" class="label">ChromaDB</text>
+  <text x="930" y="124" text-anchor="middle" class="small">vector index</text>
 
-  <path d="M 460 215 L 520 215" class="line"/>
-  <text x="482" y="206" class="step">2</text>
+  <rect x="1290" y="310" width="170" height="90" class="node model"/>
+  <text x="1375" y="342" text-anchor="middle" class="label">Phi-3 GGUF</text>
+  <text x="1375" y="364" text-anchor="middle" class="small">local model</text>
 
-  <path d="M 730 200 L 800 120" class="line"/>
-  <text x="760" y="152" class="step">3</text>
+  <!-- Numbered sequential chain -->
+  <path d="M 170 235 L 210 235" class="line"/>
+  <text x="186" y="225" class="step">1</text>
 
-  <path d="M 1010 115 L 1070 115" class="line"/>
-  <text x="1036" y="106" class="step">4</text>
+  <path d="M 380 235 L 420 235" class="line"/>
+  <text x="396" y="225" class="step">2</text>
 
-  <!-- Retrieval response to rag-api -->
-  <path d="M 800 140 L 730 214" class="lineResp"/>
-  <text x="753" y="188" class="step">5</text>
+  <path d="M 590 220 L 630 120" class="line"/>
+  <text x="604" y="162" class="step">3</text>
 
-  <!-- LLM call after retrieval -->
-  <path d="M 730 228 L 800 345" class="line"/>
-  <text x="758" y="298" class="step">6</text>
+  <path d="M 810 115 L 850 115" class="line"/>
+  <text x="826" y="105" class="step">4</text>
 
-  <path d="M 1010 345 L 1070 345" class="line"/>
-  <text x="1036" y="336" class="step">7</text>
+  <path d="M 630 140 L 590 235" class="lineResp"/>
+  <text x="603" y="201" class="step">5</text>
 
-  <!-- LLM response to rag-api -->
-  <path d="M 800 332 L 730 238" class="lineResp"/>
-  <text x="756" y="264" class="step">8</text>
+  <path d="M 1020 250 L 1060 335" class="line"/>
+  <text x="1038" y="295" class="step">6</text>
 
-  <!-- Final response path -->
-  <path d="M 620 260 C 620 390, 365 390, 365 260" class="lineResp"/>
-  <text x="495" y="402" class="step">9</text>
+  <path d="M 1250 345 L 1290 345" class="line"/>
+  <text x="1266" y="335" class="step">7</text>
 
-  <path d="M 285 260 C 285 350, 125 350, 125 260" class="lineResp"/>
-  <text x="197" y="356" class="step">10</text>
+  <path d="M 1060 350 L 1020 250" class="lineResp"/>
+  <text x="1031" y="320" class="step">8</text>
 
-  <!-- Notes -->
-  <text x="40" y="456" class="small">Current runtime order in rag-api: 1-5 retrieval phase (vector-db), then 6-8 generation phase (llm-service), then 9-10 Telegram response.</text>
-  <text x="40" y="478" class="small">Important: vector-db and llm-service are called sequentially in the current implementation (not in parallel).</text>
+  <path d="M 1020 235 L 1290 235" class="lineResp"/>
+  <text x="1150" y="225" class="step">9</text>
+
+  <path d="M 1290 250 C 900 460, 260 460, 210 250" class="lineResp"/>
+  <text x="740" y="468" class="step">10</text>
+
+  <path d="M 210 250 C 170 320, 120 320, 95 280" class="lineResp"/>
+
+  <!-- Captions -->
+  <text x="20" y="72" class="hint">Retrieval happens first (steps 3-5), then generation (steps 6-8).</text>
+  <text x="20" y="92" class="hint">No parallel rag-api fan-out: this diagram is intentionally drawn as a sequential chain.</text>
 </svg>
