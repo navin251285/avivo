@@ -34,6 +34,11 @@ Read module-level guides in this order:
 3. [03 — rag-api](docs/modules/03-rag-api.md)
 4. [04 — telegram-bot](docs/modules/04-telegram-bot.md)
 
+## Module Docs Index (Direct)
+
+- [vector-db module README](rag-system/services/vector-db/README.md)
+- [telegram-bot module README](rag-system/services/telegram-bot/README.md)
+
 ## Modules
 
 ### 1) `vector-db` (port `8002`)
