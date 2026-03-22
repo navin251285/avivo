@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Avivo RAG System Architecture</title>
+  <desc id="desc">Flow from Telegram user to telegram bot, rag api, vector db and llm service, then response back to user.</desc>
+
+  <defs>
+    <style>
+      .title { font: 700 24px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .label { font: 600 14px 'Segoe UI', Arial, sans-serif; fill: #111827; }
+      .small { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .node { fill: #f8fafc; stroke: #475569; stroke-width: 2; rx: 12; }
+      .store { fill: #ecfeff; stroke: #0e7490; stroke-width: 2; rx: 12; }
+      .api { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 12; }
+      .llm { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; rx: 12; }
+      .bot { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 12; }
+      .user { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 12; }
+      .arrow { stroke: #334155; stroke-width: 2.5; fill: none; marker-end: url(#arrowHead); }
+      .back { stroke: #0f766e; stroke-width: 2.5; fill: none; marker-end: url(#arrowHeadBack); }
+    </style>
+
+    <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0,0 10,4 0,8" fill="#334155" />
+    </marker>
+    <marker id="arrowHeadBack" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0,0 10,4 0,8" fill="#0f766e" />
+    </marker>
+  </defs>
+
+  <text x="40" y="42" class="title">Avivo HR RAG System — Architecture Overview</text>
+
+  <!-- Nodes -->
+  <rect x="40" y="165" width="180" height="88" class="user" />
+  <text x="130" y="200" text-anchor="middle" class="label">Telegram User</text>
+  <text x="130" y="222" text-anchor="middle" class="small">Asks HR questions</text>
+
+  <rect x="280" y="165" width="190" height="88" class="bot" />
+  <text x="375" y="197" text-anchor="middle" class="label">telegram-bot</text>
+  <text x="375" y="219" text-anchor="middle" class="small">NavRag interface</text>
+  <text x="375" y="238" text-anchor="middle" class="small">/start + chat messages</text>
+
+  <rect x="530" y="165" width="180" height="88" class="api" />
+  <text x="620" y="197" text-anchor="middle" class="label">rag-api</text>
+  <text x="620" y="219" text-anchor="middle" class="small">RAG orchestrator</text>
+  <text x="620" y="238" text-anchor="middle" class="small">Port 8000</text>
+
+  <rect x="770" y="80" width="190" height="88" class="store" />
+  <text x="865" y="112" text-anchor="middle" class="label">vector-db</text>
+  <text x="865" y="134" text-anchor="middle" class="small">Chunk + embed + retrieve</text>
+  <text x="865" y="153" text-anchor="middle" class="small">Port 8002</text>
+
+  <rect x="770" y="255" width="190" height="88" class="llm" />
+  <text x="865" y="287" text-anchor="middle" class="label">llm-service</text>
+  <text x="865" y="309" text-anchor="middle" class="small">Phi-3 inference API</text>
+  <text x="865" y="328" text-anchor="middle" class="small">Port 8001</text>
+
+  <rect x="1010" y="80" width="150" height="88" class="store" />
+  <text x="1085" y="112" text-anchor="middle" class="label">ChromaDB</text>
+  <text x="1085" y="134" text-anchor="middle" class="small">Vector store</text>
+  <text x="1085" y="153" text-anchor="middle" class="small">Persistent index</text>
+
+  <rect x="1010" y="255" width="150" height="88" class="llm" />
+  <text x="1085" y="287" text-anchor="middle" class="label">Phi-3 GGUF</text>
+  <text x="1085" y="309" text-anchor="middle" class="small">q4 quantized model</text>
+  <text x="1085" y="328" text-anchor="middle" class="small">Local runtime</text>
+
+  <!-- Forward flow arrows -->
+  <path d="M 220 209 L 280 209" class="arrow" />
+  <path d="M 470 209 L 530 209" class="arrow" />
+  <path d="M 710 196 L 770 132" class="arrow" />
+  <path d="M 710 222 L 770 299" class="arrow" />
+  <path d="M 960 124 L 1010 124" class="arrow" />
+  <path d="M 960 299 L 1010 299" class="arrow" />
+
+  <!-- Return flow arrow -->
+  <path d="M 620 253 C 620 360, 375 360, 375 253" class="back" />
+  <path d="M 280 253 C 280 330, 130 330, 130 253" class="back" />
+
+  <!-- Legend -->
+  <text x="40" y="385" class="small">Flow: User → telegram-bot → rag-api → (vector-db + llm-service) → answer back to user</text>
+</svg>
