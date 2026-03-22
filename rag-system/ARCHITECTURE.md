@@ -14,19 +14,36 @@ This document defines the technical architecture of the Avivo HR RAG system and 
 
 ```mermaid
 flowchart LR
-    U[Telegram User] --> T[telegram-bot]
-    T --> R[rag-api]
-  R -->|1. retrieve context| V[vector-db]
+    U[Telegram User] -->|1. ask question| T[telegram-bot]
+    T -->|2. call /ask| R[rag-api]
+  R -->|3. call /query| V[vector-db]
     V --> C[(ChromaDB)]
-  V -->|2. top-k matches| R
-  R -->|3. generate answer| L[llm-service]
+  V -->|5. top-k matches| R
+  R -->|6. call /ask| L[llm-service]
     L --> M[Phi-3-mini-4k-instruct-q4.gguf]
-  L -->|4. answer text| R
-    R --> T
-    T --> U
+  L -->|8. answer text| R
+    R -->|9. return response| T
+    T -->|10. send message| U
 ```
 
 Current behavior in `rag-api` is sequential (not parallel): it first calls `vector-db`, then calls `llm-service` after context is retrieved.
+
+## 1.1) Actual Execution Order in Code (Current)
+
+The current implementation order is:
+
+1. Telegram user sends message to `telegram-bot`.
+2. `telegram-bot` calls `rag-api` `POST /ask`.
+3. `api.py` routes `/ask` (or `/ask-rag`) to `answer_with_rag(...)` in `rag_pipeline.py`.
+4. `answer_with_rag(...)` calls `fetch_matches(...)` in `vector_client.py`.
+5. `vector-db` returns top-k matches (retrieval context).
+6. `answer_with_rag(...)` builds prompt from retrieved context.
+7. `answer_with_rag(...)` calls `ask_llm(...)` in `llm_client.py`.
+8. `llm-service` returns generated answer text.
+9. `rag-api` returns response JSON to `telegram-bot`.
+10. `telegram-bot` sends final message back to Telegram user.
+
+There is no parallel fan-out from `rag-api` to `vector-db` and `llm-service` in the current code path.
 
 ## 2) Component Breakdown
 
@@ -107,6 +124,8 @@ Key runtime inputs:
 7. `llm-service` runs inference using Phi-3 GGUF.
 8. `rag-api` returns final answer to `telegram-bot`.
 9. Telegram bot sends answer back to the user.
+
+This is a dependency chain (sequential): retrieval must complete before generation starts.
 
 ## 4) Why ChromaDB + Vectorization + Phi-3
 

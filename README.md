@@ -21,18 +21,30 @@ For bot-focused details and user experience (including screenshot-based chat exa
 
 For full system design, component flow, and Jupyter-style startup commands, see:
 
-- [Architecture Document](ARCHITECTURE.md)
+- [Architecture Document](rag-system/ARCHITECTURE.md)
 
-![Avivo RAG Architecture Overview](docs/images/architecture-overview.svg)
+![Avivo RAG Architecture Overview](rag-system/docs/images/architecture-overview.svg)
+
+### Current request sequence (as implemented)
+
+1. Telegram user sends question to `telegram-bot`.
+2. `telegram-bot` calls `rag-api` (`/ask` or `/ask-rag`).
+3. `rag-api` calls `vector-db` (`/query`) first.
+4. `rag-api` builds prompt from retrieved context.
+5. `rag-api` then calls `llm-service` (`/ask`).
+6. `rag-api` returns answer to `telegram-bot`.
+7. `telegram-bot` sends reply to Telegram user.
+
+`rag-api` currently uses sequential dependency calls (`vector-db` then `llm-service`), not parallel fan-out.
 
 ## Module Documentation
 
 Read module-level guides in this order:
 
-1. [01 — vector-db](docs/modules/01-vector-db.md)
-2. [02 — llm-service](docs/modules/02-llm-service.md)
-3. [03 — rag-api](docs/modules/03-rag-api.md)
-4. [04 — telegram-bot](docs/modules/04-telegram-bot.md)
+1. [01 — vector-db](rag-system/docs/modules/01-vector-db.md)
+2. [02 — llm-service](rag-system/docs/modules/02-llm-service.md)
+3. [03 — rag-api](rag-system/docs/modules/03-rag-api.md)
+4. [04 — telegram-bot](rag-system/docs/modules/04-telegram-bot.md)
 
 ## Module Docs Index (Direct)
 

@@ -25,6 +25,18 @@ For full system design, component flow, and Jupyter-style startup commands, see:
 
 ![Avivo RAG Architecture Overview](docs/images/architecture-overview.svg)
 
+### Current request sequence (as implemented)
+
+1. Telegram user sends question to `telegram-bot`.
+2. `telegram-bot` calls `rag-api` (`/ask` or `/ask-rag`).
+3. `rag-api` calls `vector-db` (`/query`) first.
+4. `rag-api` builds prompt from retrieved context.
+5. `rag-api` then calls `llm-service` (`/ask`).
+6. `rag-api` returns answer to `telegram-bot`.
+7. `telegram-bot` sends reply to Telegram user.
+
+`rag-api` currently uses sequential dependency calls (`vector-db` then `llm-service`), not parallel fan-out.
+
 ## Module Documentation
 
 Read module-level guides in this order:
