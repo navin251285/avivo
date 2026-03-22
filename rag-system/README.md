@@ -12,6 +12,11 @@ For bot-focused details and user experience (including screenshot-based chat exa
 
 - [NavRag Telegram Bot Guide](NAVRAG_TELEGRAM_BOT.md)
 
+### Telegram Bot Snapshots
+
+![NavRag Telegram Chat Snapshot 1](docs/images/1_hr.JPG)
+![NavRag Telegram Chat Snapshot 2](docs/images/2_hr.JPG)
+
 ## Architecture
 
 For full system design, component flow, and Jupyter-style startup commands, see:
