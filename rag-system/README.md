@@ -37,6 +37,8 @@ For full system design, component flow, and Jupyter-style startup commands, see:
 
 `rag-api` currently uses sequential dependency calls (`vector-db` then `llm-service`), not parallel fan-out.
 
+Note: `ChromaDB` is the internal storage engine used by the `vector-db` service. It is not a separate API hop from `rag-api`.
+
 ## Module Documentation
 
 Read module-level guides in this order:

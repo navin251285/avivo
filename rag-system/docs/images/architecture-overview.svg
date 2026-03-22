@@ -1,108 +1,110 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="520" viewBox="0 0 1560 520" role="img" aria-labelledby="title desc">
-  <title id="title">Avivo RAG System Current Working Flow</title>
-  <desc id="desc">Strict sequential chain: user to telegram-bot to rag-api to vector-db back to rag-api to llm-service back to rag-api to telegram-bot to user.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="500" viewBox="0 0 1480 500" role="img" aria-labelledby="title desc">
+  <title id="title">Avivo RAG System Current API Flow</title>
+  <desc id="desc">Sequential API flow with Telegram communication. ChromaDB and model are internal dependencies of vector-db and llm-service.</desc>
 
   <defs>
     <style>
-      .title { font: 700 25px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
-      .label { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .title { font: 700 24px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 14px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
       .small { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #334155; }
       .step { font: 700 12px 'Segoe UI', Arial, sans-serif; fill: #111827; }
-      .node { stroke-width: 2; rx: 14; }
+      .note { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+
+      .node { stroke-width: 2; rx: 12; }
       .user { fill: #fff7ed; stroke: #ea580c; }
       .bot { fill: #f0fdf4; stroke: #16a34a; }
       .api { fill: #eff6ff; stroke: #2563eb; }
       .vector { fill: #ecfeff; stroke: #0891b2; }
       .llm { fill: #f5f3ff; stroke: #7c3aed; }
-      .db { fill: #f0f9ff; stroke: #0e7490; }
-      .model { fill: #faf5ff; stroke: #8b5cf6; }
-      .line { stroke: #334155; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
-      .lineResp { stroke: #0f766e; stroke-width: 2.6; fill: none; marker-end: url(#arrowResp); }
-      .hint { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .store { fill: #f8fafc; stroke: #64748b; }
+
+      .lineReq { stroke: #334155; stroke-width: 2.4; fill: none; marker-end: url(#arrowReq); }
+      .lineRes { stroke: #0f766e; stroke-width: 2.6; fill: none; marker-end: url(#arrowRes); }
+      .lineDep { stroke: #64748b; stroke-width: 2; fill: none; stroke-dasharray: 5 5; marker-end: url(#arrowDep); }
     </style>
 
-    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+    <marker id="arrowReq" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <polygon points="0,0 10,4 0,8" fill="#334155"/>
     </marker>
-    <marker id="arrowResp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+    <marker id="arrowRes" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <polygon points="0,0 10,4 0,8" fill="#0f766e"/>
+    </marker>
+    <marker id="arrowDep" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0,0 9,3.5 0,7" fill="#64748b"/>
     </marker>
   </defs>
 
-  <text x="34" y="40" class="title">Avivo HR RAG — Current Working Flow (Strict Sequential Chain)</text>
+  <text x="28" y="36" class="title">Avivo HR RAG — Current Working Flow (Sequential API Calls)</text>
 
-  <!-- Main chain nodes -->
-  <rect x="20" y="190" width="150" height="90" class="node user"/>
-  <text x="95" y="224" text-anchor="middle" class="label">Telegram User</text>
-  <text x="95" y="244" text-anchor="middle" class="small">asks question</text>
+  <!-- Main flow nodes -->
+  <rect x="30" y="180" width="160" height="90" class="node user"/>
+  <text x="110" y="214" text-anchor="middle" class="label">Telegram User</text>
+  <text x="110" y="236" text-anchor="middle" class="small">asks HR question</text>
 
-  <rect x="210" y="190" width="170" height="90" class="node bot"/>
-  <text x="295" y="222" text-anchor="middle" class="label">telegram-bot</text>
-  <text x="295" y="244" text-anchor="middle" class="small">chat adapter</text>
+  <rect x="240" y="180" width="170" height="90" class="node bot"/>
+  <text x="325" y="212" text-anchor="middle" class="label">telegram-bot</text>
+  <text x="325" y="234" text-anchor="middle" class="small">chat interface</text>
 
-  <rect x="420" y="190" width="170" height="90" class="node api"/>
-  <text x="505" y="222" text-anchor="middle" class="label">rag-api</text>
-  <text x="505" y="244" text-anchor="middle" class="small">entrypoint</text>
+  <rect x="460" y="180" width="180" height="90" class="node api"/>
+  <text x="550" y="212" text-anchor="middle" class="label">rag-api</text>
+  <text x="550" y="234" text-anchor="middle" class="small">/ask, /ask-rag</text>
 
-  <rect x="630" y="70" width="180" height="90" class="node vector"/>
-  <text x="720" y="102" text-anchor="middle" class="label">vector-db</text>
-  <text x="720" y="124" text-anchor="middle" class="small">retrieve context</text>
+  <rect x="690" y="180" width="190" height="90" class="node vector"/>
+  <text x="785" y="212" text-anchor="middle" class="label">vector-db</text>
+  <text x="785" y="234" text-anchor="middle" class="small">/query retrieval API</text>
 
-  <rect x="850" y="190" width="170" height="90" class="node api"/>
-  <text x="935" y="222" text-anchor="middle" class="label">rag-api</text>
-  <text x="935" y="244" text-anchor="middle" class="small">build prompt</text>
+  <rect x="930" y="180" width="180" height="90" class="node llm"/>
+  <text x="1020" y="212" text-anchor="middle" class="label">llm-service</text>
+  <text x="1020" y="234" text-anchor="middle" class="small">/ask generation API</text>
 
-  <rect x="1060" y="310" width="190" height="90" class="node llm"/>
-  <text x="1155" y="342" text-anchor="middle" class="label">llm-service</text>
-  <text x="1155" y="364" text-anchor="middle" class="small">generate answer</text>
+  <rect x="1160" y="180" width="170" height="90" class="node bot"/>
+  <text x="1245" y="212" text-anchor="middle" class="label">telegram-bot</text>
+  <text x="1245" y="234" text-anchor="middle" class="small">sends final reply</text>
 
-  <rect x="1290" y="190" width="170" height="90" class="node api"/>
-  <text x="1375" y="222" text-anchor="middle" class="label">rag-api</text>
-  <text x="1375" y="244" text-anchor="middle" class="small">final payload</text>
+  <rect x="1360" y="180" width="100" height="90" class="node user"/>
+  <text x="1410" y="214" text-anchor="middle" class="label">User</text>
+  <text x="1410" y="236" text-anchor="middle" class="small">response</text>
 
-  <!-- Side dependency nodes -->
-  <rect x="840" y="70" width="180" height="90" class="node db"/>
-  <text x="930" y="102" text-anchor="middle" class="label">ChromaDB</text>
-  <text x="930" y="124" text-anchor="middle" class="small">vector index</text>
+  <!-- Internal dependencies (not sequential API steps) -->
+  <rect x="690" y="60" width="190" height="80" class="node store"/>
+  <text x="785" y="92" text-anchor="middle" class="label">ChromaDB</text>
+  <text x="785" y="112" text-anchor="middle" class="small">internal vector store</text>
 
-  <rect x="1290" y="310" width="170" height="90" class="node model"/>
-  <text x="1375" y="342" text-anchor="middle" class="label">Phi-3 GGUF</text>
-  <text x="1375" y="364" text-anchor="middle" class="small">local model</text>
+  <rect x="930" y="60" width="180" height="80" class="node store"/>
+  <text x="1020" y="92" text-anchor="middle" class="label">Phi-3 GGUF</text>
+  <text x="1020" y="112" text-anchor="middle" class="small">internal model runtime</text>
 
-  <!-- Numbered sequential chain -->
-  <path d="M 170 235 L 210 235" class="line"/>
-  <text x="186" y="225" class="step">1</text>
+  <!-- Numbered sequential API/chat flow -->
+  <path d="M 190 225 L 240 225" class="lineReq"/>
+  <text x="212" y="214" class="step">1</text>
 
-  <path d="M 380 235 L 420 235" class="line"/>
-  <text x="396" y="225" class="step">2</text>
+  <path d="M 410 225 L 460 225" class="lineReq"/>
+  <text x="432" y="214" class="step">2</text>
 
-  <path d="M 590 220 L 630 120" class="line"/>
-  <text x="604" y="162" class="step">3</text>
+  <path d="M 640 225 L 690 225" class="lineReq"/>
+  <text x="662" y="214" class="step">3</text>
 
-  <path d="M 810 115 L 850 115" class="line"/>
-  <text x="826" y="105" class="step">4</text>
+  <path d="M 690 245 L 640 245" class="lineRes"/>
+  <text x="662" y="260" class="step">4</text>
 
-  <path d="M 630 140 L 590 235" class="lineResp"/>
-  <text x="603" y="201" class="step">5</text>
+  <path d="M 640 205 L 930 205" class="lineReq"/>
+  <text x="780" y="194" class="step">5</text>
 
-  <path d="M 1020 250 L 1060 335" class="line"/>
-  <text x="1038" y="295" class="step">6</text>
+  <path d="M 930 245 L 640 245" class="lineRes"/>
+  <text x="780" y="260" class="step">6</text>
 
-  <path d="M 1250 345 L 1290 345" class="line"/>
-  <text x="1266" y="335" class="step">7</text>
+  <path d="M 640 225 L 1160 225" class="lineRes"/>
+  <text x="900" y="214" class="step">7</text>
 
-  <path d="M 1060 350 L 1020 250" class="lineResp"/>
-  <text x="1031" y="320" class="step">8</text>
+  <path d="M 1330 225 L 1360 225" class="lineRes"/>
+  <text x="1342" y="214" class="step">8</text>
 
-  <path d="M 1020 235 L 1290 235" class="lineResp"/>
-  <text x="1150" y="225" class="step">9</text>
+  <!-- Internal dependency links (dashed) -->
+  <path d="M 785 140 L 785 180" class="lineDep"/>
+  <path d="M 1020 140 L 1020 180" class="lineDep"/>
 
-  <path d="M 1290 250 C 900 460, 260 460, 210 250" class="lineResp"/>
-  <text x="740" y="468" class="step">10</text>
-
-  <path d="M 210 250 C 170 320, 120 320, 95 280" class="lineResp"/>
-
-  <!-- Captions -->
-  <text x="20" y="72" class="hint">Retrieval happens first (steps 3-5), then generation (steps 6-8).</text>
-  <text x="20" y="92" class="hint">No parallel rag-api fan-out: this diagram is intentionally drawn as a sequential chain.</text>
+  <!-- Explanatory notes -->
+  <text x="30" y="310" class="note">Sequential runtime order inside rag-api: fetch_matches() from vector-db first, then build prompt, then ask_llm() to llm-service.</text>
+  <text x="30" y="332" class="note">ChromaDB is not a separate external API hop from rag-api; it is the internal storage engine used by vector-db.</text>
+  <text x="30" y="354" class="small">Steps: 1 user->bot, 2 bot->rag-api, 3 rag-api->vector-db, 4 matches back, 5 rag-api->llm-service, 6 answer back, 7 rag-api->bot, 8 bot->user.</text>
 </svg>

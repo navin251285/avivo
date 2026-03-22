@@ -17,28 +17,27 @@ flowchart LR
     U[Telegram User]
     T[telegram-bot]
     R[rag-api]
-    V[vector-db]
-    C[(ChromaDB)]
-    L[llm-service]
-    M[Phi-3-mini-4k-instruct-q4.gguf]
 
-    %% Inbound chat path
-    U -->|1) User sends HR question| T
-    T -->|2) Bot calls rag-api /ask| R
+    subgraph VDBS[vector-db service (port 8002)]
+      V[/query API]
+      C[(ChromaDB collection)]
+      V -. internal storage engine .- C
+    end
 
-    %% Retrieval phase (must happen first)
-    R -->|3) rag-api calls vector-db /query| V
-    V -->|4) vector-db reads semantic index| C
-    V -->|5) top-k context matches returned| R
+    subgraph LLMS[llm-service (port 8001)]
+      L[/ask API]
+      M[(Phi-3 GGUF model)]
+      L -. model runtime .- M
+    end
 
-    %% Generation phase (starts only after retrieval)
-    R -->|6) rag-api builds prompt + calls llm-service /ask| L
-    L -->|7) llm-service runs inference| M
-    L -->|8) generated answer returned| R
-
-    %% Outbound chat path
-    R -->|9) rag-api returns answer payload| T
-    T -->|10) Bot sends reply to Telegram user| U
+    U -->|1) Telegram message| T
+    T -->|2) POST /ask to rag-api| R
+    R -->|3) fetch_matches() -> /query| V
+    V -->|4) top-k matches| R
+    R -->|5) ask_llm() -> /ask| L
+    L -->|6) answer text| R
+    R -->|7) answer payload| T
+    T -->|8) Telegram reply| U
 ```
 
 Current behavior in `rag-api` is sequential (not parallel): it first calls `vector-db`, then calls `llm-service` after context is retrieved.
@@ -59,6 +58,8 @@ The current implementation order is:
 10. `telegram-bot` sends final message back to Telegram user.
 
 There is no parallel fan-out from `rag-api` to `vector-db` and `llm-service` in the current code path.
+
+`ChromaDB` is the internal vector storage engine used by the `vector-db` service. It is not a separate API hop from `rag-api`.
 
 ## 2) Component Breakdown
 
@@ -133,7 +134,7 @@ Key runtime inputs:
 1. User asks HR question in Telegram.
 2. `telegram-bot` forwards payload to `rag-api`.
 3. `rag-api` calls `vector-db /query` for top-k relevant chunks.
-4. `vector-db` searches ChromaDB and returns matched context.
+4. `vector-db` searches ChromaDB internally and returns matched context.
 5. `rag-api` composes prompt using handbook context.
 6. `rag-api` calls `llm-service /ask`.
 7. `llm-service` runs inference using Phi-3 GGUF.
