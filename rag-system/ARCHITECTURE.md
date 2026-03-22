@@ -14,16 +14,31 @@ This document defines the technical architecture of the Avivo HR RAG system and 
 
 ```mermaid
 flowchart LR
-    U[Telegram User] -->|1. ask question| T[telegram-bot]
-    T -->|2. call /ask| R[rag-api]
-  R -->|3. call /query| V[vector-db]
-    V --> C[(ChromaDB)]
-  V -->|5. top-k matches| R
-  R -->|6. call /ask| L[llm-service]
-    L --> M[Phi-3-mini-4k-instruct-q4.gguf]
-  L -->|8. answer text| R
-    R -->|9. return response| T
-    T -->|10. send message| U
+    U[Telegram User]
+    T[telegram-bot]
+    R[rag-api]
+    V[vector-db]
+    C[(ChromaDB)]
+    L[llm-service]
+    M[Phi-3-mini-4k-instruct-q4.gguf]
+
+    %% Inbound chat path
+    U -->|1) User sends HR question| T
+    T -->|2) Bot calls rag-api /ask| R
+
+    %% Retrieval phase (must happen first)
+    R -->|3) rag-api calls vector-db /query| V
+    V -->|4) vector-db reads semantic index| C
+    V -->|5) top-k context matches returned| R
+
+    %% Generation phase (starts only after retrieval)
+    R -->|6) rag-api builds prompt + calls llm-service /ask| L
+    L -->|7) llm-service runs inference| M
+    L -->|8) generated answer returned| R
+
+    %% Outbound chat path
+    R -->|9) rag-api returns answer payload| T
+    T -->|10) Bot sends reply to Telegram user| U
 ```
 
 Current behavior in `rag-api` is sequential (not parallel): it first calls `vector-db`, then calls `llm-service` after context is retrieved.
