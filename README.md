@@ -23,6 +23,8 @@ For full system design, component flow, and Jupyter-style startup commands, see:
 
 - [Architecture Document](rag-system/ARCHITECTURE.md)
 
+![Avivo RAG Architecture Overview](rag-system/docs/images/architecture-overview.svg)
+
 Mermaid source: [architecture-overview.mmd](rag-system/docs/images/architecture-overview.mmd)
 
 ### Current request sequence (as implemented)

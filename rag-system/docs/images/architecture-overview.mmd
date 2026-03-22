@@ -1,14 +1,14 @@
 flowchart TD
   U[User\nTelegram UI]
 
-  subgraph TBOT[telegram-bot (Python bot)]
+  subgraph TBOT["telegram-bot (Python bot)"]
     TB1[Entry point for user]
     TB2[Receives user message]
     TB3[Calls rag-api]
     TB4[Sends response back to user]
   end
 
-  subgraph RAG[rag-api service (Port 8000)]
+  subgraph RAG["rag-api service (Port 8000)"]
     R1[Central orchestrator]
     R2[Handles greeting and prompt logic]
     R3[Receives query from telegram-bot]
@@ -17,13 +17,13 @@ flowchart TD
     R6[Returns final answer to telegram-bot]
   end
 
-  subgraph VDB[vector-db-service (Port 8002)]
+  subgraph VDB["vector-db-service (Port 8002)"]
     V1[Chunking PDF]
     V2[Generating embeddings]
     V3[Used only for retrieval by rag-api]
   end
 
-  subgraph LLM[llm-service (Port 8001)]
+  subgraph LLM["llm-service (Port 8001)"]
     L1[Hosts model: Phi-3-mini-4k-instruct-q4.gguf]
     L2[Loads model once\nno repeated download]
     L3[Provides inference API]

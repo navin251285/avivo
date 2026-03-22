@@ -8,6 +8,8 @@ This document defines the technical architecture of the Avivo HR RAG system and 
 - APIs: FastAPI microservices
 - Chat interface: Telegram bot (NavRag)
 
+![Avivo RAG Architecture Overview](docs/images/architecture-overview.svg)
+
 Mermaid source: [architecture-overview.mmd](docs/images/architecture-overview.mmd)
 
 ## 1) High-Level Architecture
