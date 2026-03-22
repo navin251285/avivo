@@ -16,13 +16,17 @@ This document defines the technical architecture of the Avivo HR RAG system and 
 flowchart LR
     U[Telegram User] --> T[telegram-bot]
     T --> R[rag-api]
-    R --> V[vector-db]
+  R -->|1. retrieve context| V[vector-db]
     V --> C[(ChromaDB)]
-    R --> L[llm-service]
+  V -->|2. top-k matches| R
+  R -->|3. generate answer| L[llm-service]
     L --> M[Phi-3-mini-4k-instruct-q4.gguf]
+  L -->|4. answer text| R
     R --> T
     T --> U
 ```
+
+Current behavior in `rag-api` is sequential (not parallel): it first calls `vector-db`, then calls `llm-service` after context is retrieved.
 
 ## 2) Component Breakdown
 

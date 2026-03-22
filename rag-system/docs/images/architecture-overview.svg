@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
   <title id="title">Avivo RAG System Architecture</title>
-  <desc id="desc">Flow from Telegram user to telegram bot, rag api, vector db and llm service, then response back to user.</desc>
+  <desc id="desc">Current flow is sequential inside rag-api: vector-db retrieval first, then llm-service generation, then answer back to Telegram user.</desc>
 
   <defs>
     <style>
@@ -25,7 +25,7 @@
     </marker>
   </defs>
 
-  <text x="40" y="42" class="title">Avivo HR RAG System — Architecture Overview</text>
+  <text x="40" y="42" class="title">Avivo HR RAG System — Current Working Flow</text>
 
   <!-- Nodes -->
   <rect x="40" y="165" width="180" height="88" class="user" />
@@ -62,18 +62,27 @@
   <text x="1085" y="309" text-anchor="middle" class="small">q4 quantized model</text>
   <text x="1085" y="328" text-anchor="middle" class="small">Local runtime</text>
 
-  <!-- Forward flow arrows -->
+  <!-- Forward flow arrows (sequential in rag-api) -->
   <path d="M 220 209 L 280 209" class="arrow" />
   <path d="M 470 209 L 530 209" class="arrow" />
   <path d="M 710 196 L 770 132" class="arrow" />
-  <path d="M 710 222 L 770 299" class="arrow" />
   <path d="M 960 124 L 1010 124" class="arrow" />
+  <path d="M 770 148 L 710 196" class="arrow" />
+  <path d="M 710 222 L 770 299" class="arrow" />
   <path d="M 960 299 L 1010 299" class="arrow" />
+  <path d="M 770 299 L 710 222" class="arrow" />
 
   <!-- Return flow arrow -->
   <path d="M 620 253 C 620 360, 375 360, 375 253" class="back" />
   <path d="M 280 253 C 280 330, 130 330, 130 253" class="back" />
 
+  <!-- Step labels -->
+  <text x="726" y="150" class="small">1) retrieve</text>
+  <text x="720" y="182" class="small">2) context back</text>
+  <text x="724" y="266" class="small">3) generate</text>
+  <text x="719" y="289" class="small">4) answer back</text>
+
   <!-- Legend -->
-  <text x="40" y="385" class="small">Flow: User → telegram-bot → rag-api → (vector-db + llm-service) → answer back to user</text>
+  <text x="40" y="405" class="small">Flow: User → telegram-bot → rag-api → vector-db → rag-api → llm-service → rag-api → telegram-bot → user</text>
+  <text x="40" y="427" class="small">Note: rag-api uses sequential dependency calls (vector-db first, llm-service next), not parallel fan-out.</text>
 </svg>
